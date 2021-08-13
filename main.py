@@ -326,10 +326,9 @@ def email():
                     if checkTitle == email.title and checkAddr == email.from_addr:
                         break
                     else:
-                        email = server.mail(server.listids()[x])
                         # store email subject, body in list
-                        email_address_list.append(email.from_addr)
-                        subject_list.append(email.title)
+                        # email_address_list.append(email.from_addr)
+                        # subject_list.append(email.title)
                         body = mainFunctions.content_formatting(email.body)
                         body_list.append(body)
 
@@ -452,100 +451,120 @@ def email():
                             function_result = 'Non-Phishing'
 
                         result_list.append(ml_result)
+
+                        # Check if email address is in user blacklist or whitelist
+                        listing = "-"
+                        if email.from_addr in userBlacklist:
+                            listing = "blacklist"
+                        if email.from_addr in userWhitelist:
+                            listing = "blacklist"
                         
                         # insert row in excel
-                        ws.insert_rows(2)
+                        ws.insert_rows(excelRow, amount=1)
 
-                        # read from excel file
+                        # excel file
                         excelColumn = 'A'
                         excelPosition = excelColumn + str(excelRow)
-                        subject_list.append(ws[excelPosition].value)
+                        ws[excelPosition] = email.title
+                        # ws.write(excelPosition, email.title)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        email_address_list.append(ws[excelPosition].value)
+                        ws[excelPosition] = email.from_addr
+                        # ws.write(excelPosition, email.from_addr)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        body_list.append(ws[excelPosition].value)
+                        ws[excelPosition] = emailConFormat
+                        # ws.write(excelPosition, emailConFormat)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
+                        ws[excelPosition] = listing
+                        # ws.write(excelPosition, "-")
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        result_list.append(ws[excelPosition].value)
+                        ws[excelPosition] = ml_result
+                        # ws.write(excelPosition, result)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
+                        ws[excelPosition] = emailAttach
+                        # ws.write(excelPosition, emailAttach)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
+                        ws[excelPosition] = ml_result
+                        # ws.write(excelPosition, ml_result)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
+                        ws[excelPosition] = function_result
+                        # ws.write(excelPosition, function_result)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        percentage_list.append(ws[excelPosition].value)
+                        ws[excelPosition] = percentage
+                        # ws.write(excelPosition, percentage)
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        emailValidResultList.append(ws[excelPosition].value)
+                        ws[excelPosition] = emailValidResult
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        attachmentResultList.append(ws[excelPosition].value)
+                        ws[excelPosition] = attachmentResult
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        linkResultList.append(ws[excelPosition].value)
+                        ws[excelPosition] = linkResult
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        htmlExistsList.append(ws[excelPosition].value)
+                        ws[excelPosition] = htmlExists
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        domainCountList.append(ws[excelPosition].value)
+                        ws[excelPosition] = domainCount
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        dotCountList.append(ws[excelPosition].value)
+                        ws[excelPosition] = dotCount
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        accountExistsList.append(ws[excelPosition].value)
+                        ws[excelPosition] = accountExists
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        paypalExistsList.append(ws[excelPosition].value)
+                        ws[excelPosition] = paypalExists
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        loginExistsList.append(ws[excelPosition].value)
+                        ws[excelPosition] = loginExists
                         print(excelPosition)
 
                         excelColumn = chr(ord(excelColumn) + 1)
                         excelPosition = excelColumn + str(excelRow)
-                        bankExistsList.append(ws[excelPosition].value)
+                        ws[excelPosition] = bankExists
                         print(excelPosition)
 
                         excelRow += 1
@@ -1671,38 +1690,17 @@ def showQuarantine():
     from openpyxl import load_workbook
     wb = load_workbook('logs.xlsx')
     ws = wb[username]
-    global percentageList # for quarantined emails only
-    global subjectList # for quarantined emails only
-    global bodyList # for quarantined emails only
-    global emailAddressList # for quarantined emails only
-    global resultList # for quarantined emails only
-    global emailValidResultListQ
-    global attachmentResultListQ
-    global linkResultListQ
-    global htmlExistsListQ
-    global domainCountListQ
-    global dotCountListQ
-    global accountExistsListQ
-    global paypalExistsListQ
-    global loginExistsListQ
-    global bankExistsListQ
-
+    global percentageList
+    global subjectList
+    global bodyList
+    global emailAddressList
+    global resultList
 
     percentageList = []
     subjectList = []
     bodyList = []
     emailAddressList = []
     resultList = []
-    emailValidResultListQ = []
-    attachmentResultListQ = []
-    linkResultListQ = []
-    htmlExistsListQ = []
-    domainCountListQ = []
-    dotCountListQ = []
-    accountExistsListQ = []
-    paypalExistsListQ = []
-    loginExistsListQ = []
-    bankExistsListQ = []
 
     for row in ws.rows:
         if row[4].value == "Phishing":
@@ -1711,19 +1709,7 @@ def showQuarantine():
             bodyList.append(row[2].value)
             resultList.append(row[4].value)
             percentageList.append(row[8].value)
-            emailValidResultListQ.append(row[9].value)
-            attachmentResultListQ.append(row[10].value)
-            linkResultListQ.append(row[11].value)
-            htmlExistsListQ.append(row[12].value)
-            domainCountListQ.append(row[13].value)
-            dotCountListQ.append(row[14].value)
-            accountExistsListQ.append(row[15].value)
-            paypalExistsListQ.append(row[16].value)
-            loginExistsListQ.append(row[17].value)
-            bankExistsListQ.append(row[18].value)
-
     bodylist = bodyList[0].replace("_x000D_", "")
-
     specificList = "empty"
     badge = 2
     for x in userBlacklist:
@@ -1738,7 +1724,6 @@ def showQuarantine():
     return render_template("quarantine.html", len=len(subjectList), subject=subjectList,
                            address=emailAddressList, body=bodylist, userList=specificList, badge=badge,
                            result_list=resultList, percentage_list=percentageList, model_string=model_string)
-
 
 @app.route('/inbox/quarantine/<num>')
 def showSuspicious(num):
@@ -1766,54 +1751,6 @@ def showSuspicious(num):
                            specific_address=specific_address
                            )
 
-@app.route('/inbox/quarantine/analysis')
-def analysisq():
-    emailValid = emailValidResultListQ[0]
-    attachment = attachmentResultListQ[0]
-    link = linkResultListQ[0]
-
-    htmlExist = htmlExistsListQ[0]
-    domainCount = domainCountListQ[0]
-    dotCount = dotCountListQ[0]
-    accountExist = accountExistsListQ[0]
-    paypalExist = paypalExistsListQ[0]
-    loginExist = loginExistsListQ[0]
-    bankExist = bankExistsListQ[0]
-
-    result = resultList[0]
-    percentage = percentageList[0]
-
-    return render_template('analysis1.html', emailValid=emailValid, attachment=attachment, link=link,
-                           htmlExist=htmlExist,
-                           domainCount=domainCount, dotCount=dotCount, accountExist=accountExist,
-                           paypalExist=paypalExist,
-                           loginExist=loginExist, bankExist=bankExist, result=result, percentage=percentage)
-
-
-@app.route('/inbox/quarantine/<int:num>/analysis')
-def analysisq1(num):
-    emailValid = emailValidResultListQ[num]
-    attachment = attachmentResultListQ[num]
-    link = linkResultListQ[num]
-
-    htmlExist = htmlExistsListQ[num]
-    domainCount = domainCountListQ[num]
-    dotCount = dotCountListQ[num]
-    accountExist = accountExistsListQ[num]
-    paypalExist = paypalExistsListQ[num]
-    loginExist = loginExistsListQ[num]
-    bankExist = bankExistsListQ[num]
-
-    result = resultList[num]
-    percentage = percentageList[num]
-
-    return render_template('analysis1.html', emailValid=emailValid, attachment=attachment, link=link,
-                           htmlExist=htmlExist, num=num,
-                           domainCount=domainCount, dotCount=dotCount, accountExist=accountExist,
-                           paypalExist=paypalExist,
-                           loginExist=loginExist, bankExist=bankExist, result=result, percentage=percentage)
-
-
 @app.route('/model/<int:num>')
 def model(num):
     wb = load_workbook('model.xlsx')
@@ -1828,10 +1765,12 @@ def model(num):
 @app.route("/logout")
 def logout():
     server.quit()
+    username = None
+    password = None
     return redirect("/")
 
 
 # to run application
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', port=8080, debug=False)
-    app.run()
+    app.run(host='0.0.0.0', port=8080, debug=False)
+    #app.run()
